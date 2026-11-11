@@ -15,15 +15,16 @@ from dust3r.inference import inference
 class Mast3rMatcher(BaseMatcher):
     vit_patch_size = 16
 
-    def __init__(self, device="cpu", *args, **kwargs):
+    def __init__(self, device="cpu", *args, revision=None, local_files_only=False, **kwargs):
+        # active_mapping: `revision` pins the weights commit; `local_files_only` forbids downloads.
         super().__init__(device, **kwargs)
         self.normalize = tfm.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 
         self.verbose = False
 
-        self.model = AsymmetricMASt3R.from_pretrained("naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric").to(
-            device
-        )
+        self.model = AsymmetricMASt3R.from_pretrained(
+            "naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric", revision=revision, local_files_only=local_files_only
+        ).to(device)
 
     def preprocess(self, img):
         _, h, w = img.shape
